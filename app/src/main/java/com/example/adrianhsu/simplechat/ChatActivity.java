@@ -1,17 +1,53 @@
 package com.example.adrianhsu.simplechat;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
+//import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.util.Log;
+
+import com.parse.ParseUser;
+import com.parse.ParseAnonymousUtils;
+import com.parse.LogInCallback;
+import com.parse.ParseException;
 
 
-public class ChatActivity extends ActionBarActivity {
+
+public class ChatActivity extends Activity {
+
+    private static final String TAG = ChatActivity.class.getName();
+    private static String sUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        // User login
+        if (ParseUser.getCurrentUser() != null) { // start with existing user
+            startWithCurrentUser();
+        } else { // If not logged in, login as a new anonymous user
+            login();
+        }
+    }
+
+    // Get the userId from the cached currentUser object
+    private void startWithCurrentUser() {
+        sUserId = ParseUser.getCurrentUser().getObjectId();
+    }
+
+    // Create an anonymous user using ParseAnonymousUtils and set sUserId
+    private void login() {
+        ParseAnonymousUtils.logIn(new LogInCallback() {
+            @Override
+            public void done(ParseUser user, ParseException e) {
+                if (e != null) {
+                    Log.d(TAG, "Anonymous login failed: " + e.toString());
+                } else {
+                    startWithCurrentUser();
+                }
+            }
+        });
     }
 
     @Override
