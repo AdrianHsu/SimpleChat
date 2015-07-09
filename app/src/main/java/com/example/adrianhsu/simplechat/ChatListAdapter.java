@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.view.Gravity;
 
+import com.squareup.picasso.Picasso;
+
 public class ChatListAdapter extends ArrayAdapter<Message> {
     private String mUserId;
 
