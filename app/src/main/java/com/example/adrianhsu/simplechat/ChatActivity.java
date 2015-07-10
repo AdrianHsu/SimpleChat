@@ -58,16 +58,18 @@ public class ChatActivity extends Activity {
         } else {
             login();
         }
-        // Run the runnable object defined every 100ms
-        handler.postDelayed(runnable, 100);
+        // Run the runnable object defined every 10000ms
+        handler.postDelayed(runnable, 10000);
     }
 
-    // Defines a runnable which is run every 100ms
+    // Defines a runnable which is run every 10000ms
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
             refreshMessages();
-            handler.postDelayed(this, 100);
+            handler.postDelayed(this, 10000);
+            Toast.makeText(ChatActivity.this, "refresh ChatActivity every 10sec.",
+                    Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -79,6 +81,7 @@ public class ChatActivity extends Activity {
     private void startWithCurrentUser() {
         sUserId = ParseUser.getCurrentUser().getObjectId();
         setupMessagePosting();
+        refreshMessages();
     }
 
 
@@ -116,6 +119,8 @@ public class ChatActivity extends Activity {
                 message.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
+                        Toast.makeText(ChatActivity.this, "Successfully created message on Parse",
+                                Toast.LENGTH_SHORT).show();
                         receiveMessage();
                     }
                 });
@@ -135,6 +140,8 @@ public class ChatActivity extends Activity {
         query.findInBackground(new FindCallback<Message>() {
             public void done(List<Message> messages, ParseException e) {
                 if (e == null) {
+                    //This is a primitive "polling" rather than "push" technique
+                    //for loading new messages, but will work for the purposes of this simple project.
                     mMessages.clear();
                     mMessages.addAll(messages);
                     mAdapter.notifyDataSetChanged(); // update adapter
@@ -151,7 +158,6 @@ public class ChatActivity extends Activity {
         getMenuInflater().inflate(R.menu.menu_chat, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
